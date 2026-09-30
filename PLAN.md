@@ -11,14 +11,16 @@
 Phase 1 artifact: `research/rubric-checklist.md`
 
 ## Phase 2 — Research
-- [ ] Research predictive maintenance background
-- [ ] Research industrial motor condition monitoring
-- [ ] Research relevant IoT sensing
-- [ ] Research candidate datasets
-- [ ] Research ML system / MLOps considerations
-- [ ] Verify every selected source
-- [ ] Build source ledger
-- [ ] Build assumptions register
+- [x] Research predictive maintenance background
+- [x] Research industrial motor condition monitoring
+- [x] Research relevant IoT sensing
+- [x] Research candidate datasets
+- [x] Research ML system / MLOps considerations
+- [x] Verify every selected source
+- [x] Build source ledger
+- [x] Build assumptions register
+
+Phase 2 artifacts: `research/sources.md`, `research/research-notes.md`, `research/assumptions.md`, and `research/references.bib`
 
 ## Phase 3 — System Design
 - [ ] Functional requirements
