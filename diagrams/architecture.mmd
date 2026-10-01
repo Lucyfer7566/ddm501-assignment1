@@ -1,0 +1,93 @@
+flowchart TB
+    subgraph OT["OT AND MOTOR AREA"]
+        direction LR
+        SENS["Industrial motors and sensors<br/>vibration, temperature, current, RPM"]
+        EDGE["Industrial edge gateway<br/>identity, time, quality, vibration features<br/>and durable local buffer"]
+        SENS -->|raw measurements| EDGE
+    end
+
+    subgraph DATA["CONTROLLED INGESTION AND SHARED DATA FOUNDATION"]
+        direction LR
+        BROKER["MQTT 5 broker<br/>TLS, ACLs, observable QoS"]
+        INGEST["Idempotent ingestion<br/>and immutable raw persistence"]
+        ONLINEVAL["Online validation<br/>schema, units, timestamps, quality"]
+        OPS["Operational time-series store<br/>recent data, predictions, alerts"]
+        LAKE["Historical object store<br/>raw, quarantine, curated data, lineage"]
+        CMMS["CMMS or EAM<br/>work orders, dispositions, outcomes"]
+
+        BROKER --> INGEST
+        INGEST --> ONLINEVAL
+        INGEST -->|raw landing| LAKE
+        ONLINEVAL -->|valid data| OPS
+        ONLINEVAL -.->|invalid with reason| LAKE
+        OPS <-->|prediction and work-order links| CMMS
+    end
+
+    subgraph TRAIN["TRAINING PATH"]
+        direction LR
+        HISTORY["Sensor and history data<br/>plus governed outcomes"]
+        BATCHVAL["Batch validation and curation<br/>versioned dataset and labels"]
+        FEATTRAIN["Shared preprocessing<br/>and feature engineering"]
+        TRAINER["Train one primary model<br/>XGBoost binary classifier"]
+        EVAL["Independent evaluation<br/>metrics, calibration, slices, baselines"]
+        REGISTRY["MLflow model registry<br/>immutable bundle and prior versions"]
+        DEPLOY["Human approval and deployment<br/>shadow check, activation, rollback"]
+
+        HISTORY --> BATCHVAL
+        BATCHVAL --> FEATTRAIN
+        FEATTRAIN --> TRAINER
+        TRAINER --> EVAL
+        EVAL -->|pass gates| REGISTRY
+        EVAL -.->|fail: no promotion| BATCHVAL
+        REGISTRY --> DEPLOY
+    end
+
+    subgraph INFER["INFERENCE PATH"]
+        direction LR
+        ONLINEFEAT["New validated sensor data<br/>six-hour window and shared features"]
+        SERVE["Deployed approved model<br/>cached bundle"]
+        PROB["Failure-risk probability"]
+        POLICY["Versioned threshold and hysteresis<br/>alert-episode deduplication"]
+        CLASS["Normal or High Risk<br/>or Insufficient Data"]
+        ALERT["Immutable prediction<br/>and durable alert episode"]
+        DASH["Maintenance dashboard and alert<br/>acknowledge, assign, investigate"]
+
+        ONLINEFEAT -->|valid window| SERVE
+        ONLINEFEAT -.->|invalid or stale| CLASS
+        SERVE --> PROB
+        PROB --> POLICY
+        POLICY --> CLASS
+        CLASS --> ALERT
+        ALERT --> DASH
+    end
+
+    subgraph FEEDBACK["FEEDBACK AND MLOPS PATH"]
+        direction LR
+        MON["Service, data, model<br/>and outcome monitoring"]
+        SIGNAL["Validated drift, quality or performance signal<br/>with human investigation"]
+        RETRAIN["Monthly or triggered retraining approval<br/>Airflow controlled run"]
+
+        MON --> SIGNAL
+        SIGNAL --> RETRAIN
+    end
+
+    OT -->|MQTT over TLS<br/>scalar envelopes and vibration features| DATA
+    DATA -->|curated sensor history and approved outcomes| TRAIN
+    DATA -->|validated recent data| INFER
+    TRAIN -->|approved model bundle or rollback| INFER
+    INFER -->|predictions, alert state and work-order actions| DATA
+    DATA -.->|data health and matured outcomes| FEEDBACK
+    INFER -.->|latency, errors, outputs and alert behavior| FEEDBACK
+    FEEDBACK -->|approved trigger returns to validation| TRAIN
+
+    classDef ot fill:#fff4cc,stroke:#8a6d00,color:#1f1f1f
+    classDef data fill:#e8f1fb,stroke:#356a9a,color:#1f1f1f
+    classDef train fill:#e8f7ea,stroke:#347a40,color:#1f1f1f
+    classDef infer fill:#f4eafd,stroke:#74449a,color:#1f1f1f
+    classDef feedback fill:#fdeaea,stroke:#9a4545,color:#1f1f1f
+
+    class SENS,EDGE ot
+    class BROKER,INGEST,ONLINEVAL,OPS,LAKE,CMMS data
+    class HISTORY,BATCHVAL,FEATTRAIN,TRAINER,EVAL,REGISTRY,DEPLOY train
+    class ONLINEFEAT,SERVE,PROB,POLICY,CLASS,ALERT,DASH infer
+    class MON,SIGNAL,RETRAIN feedback

@@ -23,22 +23,28 @@ Phase 1 artifact: `research/rubric-checklist.md`
 Phase 2 artifacts: `research/sources.md`, `research/research-notes.md`, `research/assumptions.md`, and `research/references.bib`
 
 ## Phase 3 — System Design
-- [ ] Functional requirements
-- [ ] Non-functional requirements
-- [ ] Data requirements
-- [ ] Business goals and metrics
-- [ ] System goals and metrics
-- [ ] Model goals and metrics
-- [ ] Thresholds and baselines
+- [x] Functional requirements
+- [x] Non-functional requirements
+- [x] Data requirements
+- [x] Business goals and metrics
+- [x] System goals and metrics
+- [x] Model goals and metrics
+- [x] Thresholds and baselines
+
+Phase 3A artifact: `design/requirements.md`
+
+Phase 3B artifact: `design/goals-metrics.md`
 
 ## Phase 4 — Architecture
-- [ ] Training path
-- [ ] Inference path
-- [ ] Monitoring
-- [ ] Retraining
-- [ ] Component responsibilities
-- [ ] Technology choices
-- [ ] Architecture diagram
+- [x] Training path
+- [x] Inference path
+- [x] Monitoring
+- [x] Retraining
+- [x] Component responsibilities
+- [x] Technology choices
+- [x] Architecture diagram
+
+Phase 4 artifacts: `design/architecture.md` and `diagrams/architecture.mmd`
 
 ## Phase 5 — Trade-offs
 - [ ] False negatives vs false positives
