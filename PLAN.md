@@ -47,10 +47,12 @@ Phase 3B artifact: `design/goals-metrics.md`
 Phase 4 artifacts: `design/architecture.md` and `diagrams/architecture.mmd`
 
 ## Phase 5 — Trade-offs
-- [ ] False negatives vs false positives
-- [ ] Edge vs cloud inference
-- [ ] Freshness vs infrastructure cost
-- [ ] Model complexity vs latency/maintainability
+- [x] False negatives vs false positives
+- [x] Edge vs cloud inference
+- [x] Freshness vs infrastructure cost
+- [x] Model complexity vs latency/maintainability
+
+Phase 5 artifact: `design/tradeoffs.md`
 
 ## Phase 6 — Draft
 - [ ] Draft full report
