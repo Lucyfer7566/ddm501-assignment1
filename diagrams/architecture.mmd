@@ -44,21 +44,28 @@ flowchart TB
 
     subgraph INFER["INFERENCE PATH"]
         direction LR
-        ONLINEFEAT["New validated sensor data<br/>six-hour window and shared features"]
+        RECENT["New validated sensor data<br/>six-hour window"]
+        ONLINEFEAT["Shared preprocessing and feature engineering<br/>completeness and freshness gate"]
         SERVE["Deployed approved model<br/>cached bundle"]
         PROB["Failure-risk probability"]
         POLICY["Versioned threshold and hysteresis<br/>alert-episode deduplication"]
-        CLASS["Normal or High Risk<br/>or Insufficient Data"]
-        ALERT["Immutable prediction<br/>and durable alert episode"]
+        CLASS["Normal or High Risk"]
+        PRED["Immutable prediction<br/>and risk classification"]
+        INSUFFICIENT["Insufficient Data<br/>reason and data-health event"]
+        ALERT["Durable High Risk<br/>alert episode"]
         DASH["Maintenance dashboard and alert<br/>acknowledge, assign, investigate"]
 
+        RECENT --> ONLINEFEAT
         ONLINEFEAT -->|valid window| SERVE
-        ONLINEFEAT -.->|invalid or stale| CLASS
+        ONLINEFEAT -.->|invalid or stale| INSUFFICIENT
         SERVE --> PROB
         PROB --> POLICY
         POLICY --> CLASS
-        CLASS --> ALERT
+        CLASS --> PRED
+        PRED --> DASH
+        CLASS -->|High Risk transition/update| ALERT
         ALERT --> DASH
+        INSUFFICIENT --> DASH
     end
 
     subgraph FEEDBACK["FEEDBACK AND MLOPS PATH"]
@@ -89,5 +96,5 @@ flowchart TB
     class SENS,EDGE ot
     class BROKER,INGEST,ONLINEVAL,OPS,LAKE,CMMS data
     class HISTORY,BATCHVAL,FEATTRAIN,TRAINER,EVAL,REGISTRY,DEPLOY train
-    class ONLINEFEAT,SERVE,PROB,POLICY,CLASS,ALERT,DASH infer
+    class RECENT,ONLINEFEAT,SERVE,PROB,POLICY,CLASS,PRED,INSUFFICIENT,ALERT,DASH infer
     class MON,SIGNAL,RETRAIN feedback

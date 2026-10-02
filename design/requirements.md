@@ -19,7 +19,7 @@ The assignment and scenario provide no fleet size, cadence, latency, availabilit
 | ID | Provisional assumption and justification |
 |---|---|
 | PA-01 | **100 instrumented motors initially, with capacity validation at 500 motors.** This gives a concrete initial load and a fivefold growth test without claiming a real fleet size. |
-| PA-02 | **Scheduled scoring every 15 minutes per motor, plus an authorized on-demand score.** A 15-minute cadence produces four scores per motor-hour and is operationally timely relative to the fixed 24-hour prediction horizon without implying hard-real-time control. |
+| PA-02 | **Scheduled scoring every 15 minutes per motor, plus authorized on-demand scoring with 10% capacity headroom.** A 15-minute cadence produces four scheduled scores per motor-hour; the provisional headroom adds up to 40 on-demand requests/hour initially and 200/hour at growth load. This is operationally timely relative to the fixed 24-hour horizon and provides a testable burst allowance until workflow observation supplies real demand. |
 | PA-03 | **A provisional six-hour lookback window.** Six hours provides recent trend context while bounding online feature computation. Model development must compare alternative windows and approve the final value before production. |
 | PA-04 | **Central sizing uses one approximately 256-byte normalized scalar record per motor-second and one approximately 4 KiB vibration feature packet per motor-minute.** These are engineering envelopes, including identifiers and quality metadata, not sensor specifications. Raw high-frequency vibration retention and edge processing remain architecture decisions and must be sized from an actual sensor survey. |
 | PA-05 | **Ninety days of hot telemetry and two years of curated cold telemetry, labels, predictions, and audit records.** This provisional split supports recent investigation and longer-horizon model development while allowing older high-volume data to use a lower-cost tier. Plant policy may require a different retention period. |
@@ -52,9 +52,9 @@ The assignment and scenario provide no fleet size, cadence, latency, availabilit
 
 ### FR-04 — Support scheduled and on-demand scoring
 
-- **Requirement statement:** The system shall score each eligible motor every 15 minutes (PA-02) and shall support an authenticated on-demand request from the maintenance application. Repeated requests for the same motor, window, and model version shall be idempotent.
+- **Requirement statement:** The system shall score each eligible motor every 15 minutes (PA-02) and shall support authenticated, rate-limited on-demand requests from the maintenance application. Repeated requests for the same motor, window, and model version shall be idempotent, and on-demand work shall not displace due scheduled work.
 - **Rationale:** Scheduled scoring provides consistent coverage; on-demand scoring supports investigation without creating a different ML task. Idempotency prevents retry-driven duplicate results.
-- **Measurable criterion:** Under PA-01, the scheduler creates 400 initial and 2,000 growth-case scheduled predictions per hour with no duplicate prediction keys; an authorized on-demand request produces or retrieves the corresponding traceable result.
+- **Measurable criterion:** Under PA-01, capacity tests execute 400 scheduled plus up to 40 on-demand predictions/hour initially and 2,000 plus up to 200/hour at growth load, with no duplicate prediction keys or NFR-01 breach.
 - **Classification:** DESIGN ASSUMPTION.
 - **Supporting source/basis:** PA-01 and PA-02; the cadence and load are not specified by external evidence.
 
@@ -76,9 +76,9 @@ The assignment and scenario provide no fleet size, cadence, latency, availabilit
 
 ### FR-07 — Manage alert lifecycle without repeated alert storms
 
-- **Requirement statement:** On a transition into `High Risk`, the alert service shall create or update one active alert per motor and prediction horizon rather than emitting a new alert at every scoring cycle. The dashboard shall support acknowledgement, assignment, comment, investigation status, closure reason, and escalation according to configurable plant policy. Risk thresholds, hysteresis, and escalation rules shall be configuration controlled and finalized in Phase 3B rather than embedded in code.
+- **Requirement statement:** The alert service shall use a versioned state machine. A valid score at or above `T_enter` starts one episode; further high-risk scores update it. The episode closes for metric purposes after two consecutive valid scores at or below `T_exit`, where `T_exit < T_enter`; `Insufficient Data` neither closes nor re-arms it. A later entry crossing starts a new episode. The dashboard workflow state is separate and supports acknowledgement, assignment, comment, investigation status, closure reason, and escalation.
 - **Rationale:** Persistent lifecycle state supports accountable action and limits repeated notifications. Configurable thresholds avoid prematurely inventing a model operating point or plant escalation policy.
-- **Measurable criterion:** Repeated high-risk predictions for the same active episode update one alert; state changes are timestamped with actor identity; threshold/configuration changes are versioned and audited.
+- **Measurable criterion:** Boundary tests verify entry, repeated updates, the two-score exit, no state change on `Insufficient Data`, and re-entry only after closure. State changes are timestamped; thresholds and the state-machine version are frozen before untouched evaluation and audited.
 - **Classification:** DESIGN DECISION.
 - **Supporting source/basis:** `scenario.md` dashboard/alert concept; S09; OPEN QUESTION-08. No achieved alert threshold is claimed.
 
@@ -94,7 +94,7 @@ The assignment and scenario provide no fleet size, cadence, latency, availabilit
 
 ### NFR-01 — End-to-end response latency
 
-- **Requirement statement:** Under the initial 100-motor load, at least 95% of scheduled predictions shall be visible in the dashboard within two minutes of the scheduled window close; no normally processed prediction shall arrive later than the next 15-minute scoring cycle.
+- **Requirement statement:** Under the initial and growth envelopes, including PA-02 on-demand headroom, at least 95% of scheduled predictions and accepted on-demand requests shall be visible in the dashboard within two minutes of the window close or request acceptance; no normally processed prediction shall arrive later than the next 15-minute scoring cycle.
 - **Rationale:** The target concerns the next 24 hours, so minute-scale—not subsecond—delivery is sufficient for an advisory maintenance workflow and avoids unjustified hard-real-time infrastructure.
 - **Measurable criterion:** Load tests measure event time/window close to successful dashboard persistence and show p95 ≤ 2 minutes and maximum normal-path latency < 15 minutes at the initial load.
 - **Classification:** DESIGN ASSUMPTION.
@@ -102,7 +102,7 @@ The assignment and scenario provide no fleet size, cadence, latency, availabilit
 
 ### NFR-02 — Expected load and throughput
 
-- **Requirement statement:** The production design shall sustain the PA-01 initial load of 100 scalar records per second, 100 vibration feature packets per minute, and 400 scheduled predictions per hour, and shall pass capacity tests at the 500-motor growth case: 500 scalar records per second, 500 vibration packets per minute, and 2,000 predictions per hour.
+- **Requirement statement:** The production design shall sustain the PA-01 initial load of 100 scalar records per second, 100 vibration feature packets per minute, and 440 total predictions per hour including headroom, and shall pass capacity tests at the 500-motor growth case: 500 scalar records per second, 500 vibration packets per minute, and 2,200 total predictions per hour.
 - **Rationale:** Explicit event and scoring rates turn “scalable” into a testable capacity requirement. The fivefold case provides headroom for fleet growth without asserting actual demand.
 - **Measurable criterion:** A representative one-hour load test at each envelope completes without data loss, unbounded queue growth, or violation of NFR-01; resource saturation and consumer lag are recorded.
 - **Classification:** DESIGN ASSUMPTION.
@@ -118,7 +118,7 @@ The assignment and scenario provide no fleet size, cadence, latency, availabilit
 
 ### NFR-04 — Service reliability and recoverability
 
-- **Requirement statement:** The prediction and dashboard path shall target 99.5% monthly availability, excluding approved maintenance. Components shall use health checks, retry with bounded backoff, idempotent writes, durable queues, and retention of the last approved model and preprocessing package for rollback.
+- **Requirement statement:** The prediction and dashboard path shall target 99.5% monthly availability, measured as eligible scheduled opportunities whose result is persisted and retrievable before the next scoring cycle divided by all eligible scheduled opportunities. Approved maintenance is removed from numerator and denominator. Components shall use health checks, bounded retry, idempotent writes, durable queues, and retention of the last approved model and preprocessing package for rollback.
 - **Rationale:** The system is operationally important but advisory rather than an autonomous safety control, making 99.5% a provisional balance between continuity and design complexity. Retries and rollback address transient and release-related failures.
 - **Measurable criterion:** Monthly availability is measured at the prediction-consumption boundary; fault-injection tests verify retry/idempotency and successful rollback to the previous approved bundle. The target is a design assumption, not an achieved result.
 - **Classification:** DESIGN ASSUMPTION.
@@ -142,7 +142,7 @@ The assignment and scenario provide no fleet size, cadence, latency, availabilit
 
 ### NFR-07 — Maintainability and reproducibility
 
-- **Requirement statement:** Code, configuration, schemas, preprocessing logic, feature definitions, models, and alert rules shall be version controlled. Every deployed prediction shall be reproducible from immutable version identifiers and retained input/feature lineage. Changes shall pass automated unit, contract, data-validation, integration, and rollback tests before controlled deployment.
+- **Requirement statement:** Code, configuration, schemas, preprocessing logic, feature definitions, models, and alert rules shall be version controlled. Every deployed prediction shall retain its immutable feature vector and source references for the provisional two-year cold-retention period so it can be reproduced within that declared audit window. Changes shall pass automated unit, contract, data-validation, integration, and rollback tests before controlled deployment.
 - **Rationale:** Training-serving consistency and auditable change control reduce technical debt and allow diagnosis of prediction changes.
 - **Measurable criterion:** A release gate blocks an unversioned or failing artifact; an audit exercise reconstructs the artifact versions and source window for a sampled prediction.
 - **Classification:** DESIGN DECISION.

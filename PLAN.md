@@ -55,18 +55,24 @@ Phase 4 artifacts: `design/architecture.md` and `diagrams/architecture.mmd`
 Phase 5 artifact: `design/tradeoffs.md`
 
 ## Phase 6 — Draft
-- [ ] Draft full report
-- [ ] Insert citations
-- [ ] Insert architecture figure
+- [x] Draft full report
+- [x] Insert citations
+- [x] Insert architecture figure
+
+Phase 6 artifact: `drafts/report-v1.md`
 
 ## Phase 7 — Independent Review
-- [ ] Rubric audit
-- [ ] Evidence/citation audit
-- [ ] System consistency audit
+- [x] Rubric audit
+- [x] Evidence/citation audit
+- [x] System consistency audit
+
+Phase 7 artifacts: `review/rubric-audit.md`, `review/evidence-audit.md`, and `review/system-consistency-audit.md`
 
 ## Phase 8 — Finalization
-- [ ] Resolve review findings
+- [x] Resolve review findings
 - [ ] Final language pass
 - [ ] Render DOCX/PDF
 - [ ] Visual inspection
 - [ ] Final filename validation
+
+Phase 8 revision artifacts: `drafts/report-v2.md` and `review/report-v2-self-check.md`
