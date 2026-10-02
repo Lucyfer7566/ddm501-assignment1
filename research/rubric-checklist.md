@@ -7,7 +7,7 @@
 - This checklist records **37 explicit requirements**: **28 weighted report-rubric criteria** and **9 unweighted scenario/submission constraints**.
 - A compound rubric line is kept as one requirement when the PDF presents it as one criterion (for example, “Performance: latency, throughput, response time expectations”). Its individual elements are retained in the evidence column so none are lost.
 - The trade-off topics listed in the PDF are examples, not mandatory topics. They are therefore not counted as five separate requirements.
-- The original rubric tables preserve their Phase 1 baseline status of **NOT STARTED**. The authoritative current status after Phase 6 is the item-by-item draft coverage audit below. An item is marked complete there only when the required content exists in `drafts/report-v1.md`; final-deliverable constraints remain incomplete.
+- The original rubric tables preserve their Phase 1 baseline status of **NOT STARTED**. The authoritative current report-content status is the item-by-item final-source coverage audit below. An item is marked complete there only when the required content exists in `final/report.md`; PDF rendering and filename constraints remain incomplete.
 
 ## A. Scenario eligibility and complexity constraints
 
@@ -83,47 +83,47 @@
 | SUB-01 | Submission Guidelines | Not specified | Submit a written report as a PDF. | A final rendered PDF whose content and diagrams have been visually checked. | Final deliverable PDF | NOT STARTED |
 | SUB-02 | Submission Guidelines — File Naming | Not specified | Name the file `DDM501_Assignment1_[StudentID]_[Name].pdf`. | Filename populated with the student’s actual ID and name, with the required prefix and PDF extension. | Final deliverable filename | NOT STARTED |
 
-## Phase 6 draft coverage audit
+## Phase 8 final-source coverage audit
 
-The subsection text below is exact as it appears in `drafts/report-v1.md`. **COMPLETE IN REPORT V1** means the report content exists; it does not mean that independent review, revision, rendering, or final submission is complete.
+The subsection text below is exact as it appears in `final/report.md`. **COMPLETE IN FINAL SOURCE** means the report content exists and passed the Phase 8 source audit; it does not mean that PDF rendering, visual inspection, filename population, or final submission is complete.
 
 | ID | Exact report subsection(s) satisfying the item | Current status |
 |---|---|---|
-| SC-01 | `1.2 Measurable Problem Statement and Scope` | COMPLETE IN REPORT V1 |
-| SC-02 | `1.5 Stakeholders and Concerns` | COMPLETE IN REPORT V1 |
-| SC-03 | `2.3 Non-Functional Requirements`; `4.2 Data Flow and ML Pipeline`; `4.4 Deployment, Scaling, Reliability, and Maintenance` | COMPLETE IN REPORT V1 |
-| SC-04 | `2.4.1 Sources, provenance, and labels`; `2.4.2 Quality and missing/corrupt readings`; `2.4.3 Privacy, confidentiality, and security` | COMPLETE IN REPORT V1 |
-| SC-05 | `3.1 Goal Hierarchy and Measurement Policy` | COMPLETE IN REPORT V1 |
-| SC-06 | `4.2 Data Flow and ML Pipeline`; `4.3 Component Responsibilities, Technologies, and Failure Behavior`; `4.4 Deployment, Scaling, Reliability, and Maintenance`; `5. Trade-offs Analysis` | COMPLETE IN REPORT V1 |
-| SC-07 | `1.2 Measurable Problem Statement and Scope`; `4.1 Architectural Stance and Diagram` | COMPLETE IN REPORT V1 |
-| PD-01 | `1.1 Context and Background` | COMPLETE IN REPORT V1 |
-| PD-02 | `1.2 Measurable Problem Statement and Scope` | COMPLETE IN REPORT V1 |
-| PD-03 | `1.3 Current Situation` | COMPLETE IN REPORT V1 |
-| PD-04 | `1.4 Justification for ML` | COMPLETE IN REPORT V1 |
-| PD-05 | `1.5 Stakeholders and Concerns` | COMPLETE IN REPORT V1 |
-| RA-F01 | `2.2 Functional Requirements` (FR-01 and FR-04) | COMPLETE IN REPORT V1 |
-| RA-F02 | `2.2 Functional Requirements` (FR-02 and FR-03) | COMPLETE IN REPORT V1 |
-| RA-F03 | `2.2 Functional Requirements` (FR-05 and FR-08) | COMPLETE IN REPORT V1 |
-| RA-F04 | `2.2 Functional Requirements` (FR-06 through FR-08) | COMPLETE IN REPORT V1 |
-| RA-N01 | `2.3 Non-Functional Requirements` (NFR-01 and NFR-02) | COMPLETE IN REPORT V1 |
-| RA-N02 | `2.3 Non-Functional Requirements` (NFR-02 and NFR-03) | COMPLETE IN REPORT V1 |
-| RA-N03 | `2.3 Non-Functional Requirements` (NFR-04 through NFR-06); `4.4 Deployment, Scaling, Reliability, and Maintenance` | COMPLETE IN REPORT V1 |
-| RA-N04 | `2.3 Non-Functional Requirements` (NFR-07 through NFR-09); `4.2.3 Feedback and MLOps path`; `4.4 Deployment, Scaling, Reliability, and Maintenance` | COMPLETE IN REPORT V1 |
-| RA-D01 | `2.4.1 Sources, provenance, and labels` | COMPLETE IN REPORT V1 |
-| RA-D02 | `2.4.2 Quality and missing/corrupt readings` | COMPLETE IN REPORT V1 |
-| RA-D03 | `2.4.3 Privacy, confidentiality, and security` | COMPLETE IN REPORT V1 |
-| RA-D04 | `2.4.4 Expected data volume` | COMPLETE IN REPORT V1 |
-| GM-01 | `3.1 Goal Hierarchy and Measurement Policy` | COMPLETE IN REPORT V1 |
-| GM-02 | `3.1 Goal Hierarchy and Measurement Policy` | COMPLETE IN REPORT V1 |
-| GM-03 | `3.2 System Goals and Metrics` | COMPLETE IN REPORT V1 |
-| GM-04 | `3.3 Model Goals, Evaluation Units, and Metrics` | COMPLETE IN REPORT V1 |
-| GM-05 | `3.1 Goal Hierarchy and Measurement Policy`; `3.2 System Goals and Metrics`; `3.3 Model Goals, Evaluation Units, and Metrics`; `3.4 Acceptance and Promotion` | COMPLETE IN REPORT V1 |
-| AR-01 | `4.1 Architectural Stance and Diagram` (Figure 1) | COMPLETE IN REPORT V1 |
-| AR-02 | `4.2 Data Flow and ML Pipeline` | COMPLETE IN REPORT V1 |
-| AR-03 | `4.2.1 Training path`; `4.2.2 Inference path`; `4.2.3 Feedback and MLOps path` | COMPLETE IN REPORT V1 |
-| AR-04 | `4.3 Component Responsibilities, Technologies, and Failure Behavior` | COMPLETE IN REPORT V1 |
-| AR-05 | `4.3 Component Responsibilities, Technologies, and Failure Behavior` | COMPLETE IN REPORT V1 |
-| TO-01 | `5.1 TO-01 — False Negatives versus False Positives`; `5.2 TO-02 — Edge versus Centralized/Cloud Inference`; `5.3 TO-03 — Prediction/Data Freshness versus Infrastructure Cost`; `5.4 TO-04 — Model Complexity/Performance versus Latency and Maintainability` | COMPLETE IN REPORT V1 |
+| SC-01 | `1.2 Measurable Problem Statement and Scope` | COMPLETE IN FINAL SOURCE |
+| SC-02 | `1.5 Stakeholders and Concerns` | COMPLETE IN FINAL SOURCE |
+| SC-03 | `2.3 Non-Functional Requirements`; `4.2 Data Flow and ML Pipeline`; `4.4 Deployment, Scaling, Reliability, and Maintenance` | COMPLETE IN FINAL SOURCE |
+| SC-04 | `2.4.1 Sources, provenance, and labels`; `2.4.2 Quality and missing/corrupt readings`; `2.4.3 Privacy, confidentiality, and security` | COMPLETE IN FINAL SOURCE |
+| SC-05 | `3.1 Goal Hierarchy and Measurement Policy` | COMPLETE IN FINAL SOURCE |
+| SC-06 | `4.2 Data Flow and ML Pipeline`; `4.3 Component Responsibilities, Technologies, and Failure Behavior`; `4.4 Deployment, Scaling, Reliability, and Maintenance`; `5. Trade-offs Analysis` | COMPLETE IN FINAL SOURCE |
+| SC-07 | `1.2 Measurable Problem Statement and Scope`; `4.1 Architectural Stance and Diagram` | COMPLETE IN FINAL SOURCE |
+| PD-01 | `1.1 Context and Background` | COMPLETE IN FINAL SOURCE |
+| PD-02 | `1.2 Measurable Problem Statement and Scope` | COMPLETE IN FINAL SOURCE |
+| PD-03 | `1.3 Current Situation` | COMPLETE IN FINAL SOURCE |
+| PD-04 | `1.4 Justification for ML` | COMPLETE IN FINAL SOURCE |
+| PD-05 | `1.5 Stakeholders and Concerns` | COMPLETE IN FINAL SOURCE |
+| RA-F01 | `2.2 Functional Requirements` (FR-01 and FR-04) | COMPLETE IN FINAL SOURCE |
+| RA-F02 | `2.2 Functional Requirements` (FR-02 and FR-03) | COMPLETE IN FINAL SOURCE |
+| RA-F03 | `2.2 Functional Requirements` (FR-05 and FR-08) | COMPLETE IN FINAL SOURCE |
+| RA-F04 | `2.2 Functional Requirements` (FR-06 through FR-08) | COMPLETE IN FINAL SOURCE |
+| RA-N01 | `2.3 Non-Functional Requirements` (NFR-01 and NFR-02) | COMPLETE IN FINAL SOURCE |
+| RA-N02 | `2.3 Non-Functional Requirements` (NFR-02 and NFR-03) | COMPLETE IN FINAL SOURCE |
+| RA-N03 | `2.3 Non-Functional Requirements` (NFR-04 through NFR-06); `4.4 Deployment, Scaling, Reliability, and Maintenance` | COMPLETE IN FINAL SOURCE |
+| RA-N04 | `2.3 Non-Functional Requirements` (NFR-07 through NFR-09); `4.2.3 Feedback and MLOps path`; `4.4 Deployment, Scaling, Reliability, and Maintenance` | COMPLETE IN FINAL SOURCE |
+| RA-D01 | `2.4.1 Sources, provenance, and labels` | COMPLETE IN FINAL SOURCE |
+| RA-D02 | `2.4.2 Quality and missing/corrupt readings` | COMPLETE IN FINAL SOURCE |
+| RA-D03 | `2.4.3 Privacy, confidentiality, and security` | COMPLETE IN FINAL SOURCE |
+| RA-D04 | `2.4.4 Expected data volume` | COMPLETE IN FINAL SOURCE |
+| GM-01 | `3.1 Goal Hierarchy and Measurement Policy` | COMPLETE IN FINAL SOURCE |
+| GM-02 | `3.1 Goal Hierarchy and Measurement Policy` | COMPLETE IN FINAL SOURCE |
+| GM-03 | `3.2 System Goals and Metrics` | COMPLETE IN FINAL SOURCE |
+| GM-04 | `3.3 Model Goals, Evaluation Units, and Metrics` | COMPLETE IN FINAL SOURCE |
+| GM-05 | `3.1 Goal Hierarchy and Measurement Policy`; `3.2 System Goals and Metrics`; `3.3 Model Goals, Evaluation Units, and Metrics`; `3.4 Acceptance and Promotion` | COMPLETE IN FINAL SOURCE |
+| AR-01 | `4.1 Architectural Stance and Diagram` (Figure 1) | COMPLETE IN FINAL SOURCE |
+| AR-02 | `4.2 Data Flow and ML Pipeline` | COMPLETE IN FINAL SOURCE |
+| AR-03 | `4.2.1 Training path`; `4.2.2 Inference path`; `4.2.3 Feedback and MLOps path` | COMPLETE IN FINAL SOURCE |
+| AR-04 | `4.3 Component Responsibilities, Technologies, and Failure Behavior` | COMPLETE IN FINAL SOURCE |
+| AR-05 | `4.3 Component Responsibilities, Technologies, and Failure Behavior` | COMPLETE IN FINAL SOURCE |
+| TO-01 | `5.1 TO-01 — False Negatives versus False Positives`; `5.2 TO-02 — Edge versus Centralized/Cloud Inference`; `5.3 TO-03 — Prediction/Data Freshness versus Infrastructure Cost`; `5.4 TO-04 — Model Complexity/Performance versus Latency and Maintainability` | COMPLETE IN FINAL SOURCE |
 | SUB-01 | No report subsection can satisfy final PDF rendering and visual inspection; reserved for Phase 8. | NOT COMPLETE |
 | SUB-02 | No report subsection can satisfy the final filename until the student ID and name are supplied; reserved for Phase 8. | NOT COMPLETE |
 

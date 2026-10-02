@@ -70,9 +70,10 @@ Phase 7 artifacts: `review/rubric-audit.md`, `review/evidence-audit.md`, and `re
 
 ## Phase 8 — Finalization
 - [x] Resolve review findings
-- [ ] Final language pass
+- [x] Final source preparation and language pass
+- [x] Final source pre-publication audit
 - [ ] Render DOCX/PDF
 - [ ] Visual inspection
 - [ ] Final filename validation
 
-Phase 8 revision artifacts: `drafts/report-v2.md` and `review/report-v2-self-check.md`
+Phase 8 source artifacts: `drafts/report-v2.md`, `review/report-v2-self-check.md`, and `final/report.md`
