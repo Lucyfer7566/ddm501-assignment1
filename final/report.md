@@ -175,9 +175,9 @@ Promotion requires an approved failure definition; leakage-resistant time/asset 
 
 The proposed deployment is a small central on-premises VM/container cluster connected to the OT area through industrial gateways and an authenticated MQTT broker. Gateways perform acquisition, identity/time/unit normalization, versioned high-rate vibration feature extraction, and durable buffering. Central services validate, store, train, register, score, monitor, and deliver alerts. Training and serving share the same versioned feature package. One XGBoost binary classifier is the primary predictive model; deterministic rules and logistic regression remain non-production comparators.
 
-![High-level training, inference, and feedback architecture](diagrams/architecture.png)
+![High-level training, inference, and feedback architecture](../diagrams/architecture.png)
 
-**Figure 1. Proposed production ML architecture.** Solid flows carry normal-path data or artifacts; dotted flows represent invalid-data, monitoring, or feedback behavior. The architecture is prospective and does not represent an existing deployment.
+**Figure 1. Proposed production ML architecture.** Four bands separate data acquisition/storage, training, inference, and monitoring/retraining. Matching letters show transfers: A, curated history and approved outcomes to training; B, approved bundle or rollback to inference; C, validated recent data to inference; D, data health, serving telemetry and matured outcomes to monitoring; E, approved retraining back to batch validation; F, predictions, alert state and workflow actions back to the operational store. Solid arrows show routine flows; dotted arrows show invalid-data or failed-evaluation paths. The architecture is prospective and does not represent an existing deployment.
 
 ## 4.2 Data Flow and ML Pipeline
 

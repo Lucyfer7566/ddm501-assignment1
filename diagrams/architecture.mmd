@@ -1,100 +1,67 @@
-flowchart TB
-    subgraph OT["OT AND MOTOR AREA"]
-        direction LR
-        SENS["Industrial motors and sensors<br/>vibration, temperature, current, RPM"]
-        EDGE["Industrial edge gateway<br/>identity, time, quality, vibration features<br/>and durable local buffer"]
-        SENS -->|raw measurements| EDGE
-    end
+---
+config:
+  theme: base
+  look: classic
+  fontFamily: Arial
+  themeVariables:
+    fontFamily: Arial
+    fontSize: 22px
+  block:
+    padding: 12
+---
+%% Matching letters are directed transfers between bands (see Figure 1 caption).
+%% A: object store and CMMS -> training history.
+%% B: approved deployment/rollback -> serving bundle.
+%% C: validated operational data -> recent inference window.
+%% D: data/serving health and matured outcomes -> monitoring.
+%% E: approved Airflow retraining -> batch validation.
+%% F: predictions, episodes and workflow actions -> operational store.
+block-beta
+    columns 4
+    SENS["MOTOR DATA<br/>sensors (OT)"] EDGE["Edge gateway<br/>features + buffer"] BROKER["MQTT 5 broker<br/>TLS + ACLs"] INGEST["Dedup + ingest<br/>persist raw data"]
+    CMMS["CMMS / EAM<br/>work orders /<br/>outcomes (A, D)"] OPS["Time-series store<br/>recent data (C)<br/>risk / actions (F)"] ONLINEVAL["Validate data"] LAKE["Object store<br/>raw / quarantine<br/>curated (A, D)"]
+    HISTORY["TRAINING (A)<br/>sensor history<br/>+ outcomes"] BATCHVAL["Validate + curate<br/>data + labels (E)"] FEATTRAIN["Preprocess<br/>shared features"] TRAINER["Train XGBoost<br/>binary classifier"]
+    space DEPLOY["Human approval<br/>shadow / deploy<br/>rollback (B)"] REGISTRY["MLflow registry<br/>versioned bundle"] EVAL["Evaluate gates<br/>independent"]
+    space:4
+    RECENT["INFERENCE (C)<br/>six-hour window"] ONLINEFEAT["Shared features<br/>validity gate"] SERVE["Model cache (B)<br/>approved bundle"] PROB["24-hour failure<br/>risk probability (D)"]
+    INSUFFICIENT["Insufficient Data<br/>reason / health (D)"] PRED["Persist prediction<br/>immutable log"] CLASS["Normal /<br/>High Risk"] POLICY["Risk policy<br/>thresholds<br/>hysteresis / dedup"]
+    DASH["Dashboard (F, D)<br/>ack / assign /<br/>investigate"] space ALERT["High Risk only<br/>durable episode"] space
+    MON["MONITORING (D)<br/>service / data /<br/>model / outcome"] SIGNAL["Drift / quality /<br/>performance<br/>human review"] RETRAIN["Approve retrain<br/>Airflow run (E)<br/>monthly / trigger"] space
 
-    subgraph DATA["CONTROLLED INGESTION AND SHARED DATA FOUNDATION"]
-        direction LR
-        BROKER["MQTT 5 broker<br/>TLS, ACLs, observable QoS"]
-        INGEST["Idempotent ingestion<br/>and immutable raw persistence"]
-        ONLINEVAL["Online validation<br/>schema, units, timestamps, quality"]
-        OPS["Operational time-series store<br/>recent data, predictions, alerts"]
-        LAKE["Historical object store<br/>raw, quarantine, curated data, lineage"]
-        CMMS["CMMS or EAM<br/>work orders, dispositions, outcomes"]
+    SENS --> EDGE
+    EDGE --> BROKER
+    BROKER --> INGEST
+    INGEST --> ONLINEVAL
+    INGEST --> LAKE
+    ONLINEVAL --> OPS
+    ONLINEVAL -.-> LAKE
+    OPS <--> CMMS
+    HISTORY --> BATCHVAL
+    BATCHVAL --> FEATTRAIN
+    FEATTRAIN --> TRAINER
+    TRAINER --> EVAL
+    EVAL -.-> BATCHVAL
+    EVAL --> REGISTRY
+    REGISTRY --> DEPLOY
+    RECENT --> ONLINEFEAT
+    ONLINEFEAT -.-> INSUFFICIENT
+    ONLINEFEAT --> SERVE
+    SERVE --> PROB
+    PROB --> POLICY
+    POLICY --> CLASS
+    CLASS --> PRED
+    CLASS --> ALERT
+    ALERT --> DASH
+    INSUFFICIENT --> DASH
+    PRED --> DASH
+    MON --> SIGNAL
+    SIGNAL --> RETRAIN
 
-        BROKER --> INGEST
-        INGEST --> ONLINEVAL
-        INGEST -->|raw landing| LAKE
-        ONLINEVAL -->|valid data| OPS
-        ONLINEVAL -.->|invalid with reason| LAKE
-        OPS <-->|prediction and work-order links| CMMS
-    end
-
-    subgraph TRAIN["TRAINING PATH"]
-        direction LR
-        HISTORY["Sensor and history data<br/>plus governed outcomes"]
-        BATCHVAL["Batch validation and curation<br/>versioned dataset and labels"]
-        FEATTRAIN["Shared preprocessing<br/>and feature engineering"]
-        TRAINER["Train one primary model<br/>XGBoost binary classifier"]
-        EVAL["Independent evaluation<br/>metrics, calibration, slices, baselines"]
-        REGISTRY["MLflow model registry<br/>immutable bundle and prior versions"]
-        DEPLOY["Human approval and deployment<br/>shadow check, activation, rollback"]
-
-        HISTORY --> BATCHVAL
-        BATCHVAL --> FEATTRAIN
-        FEATTRAIN --> TRAINER
-        TRAINER --> EVAL
-        EVAL -->|pass gates| REGISTRY
-        EVAL -.->|fail: no promotion| BATCHVAL
-        REGISTRY --> DEPLOY
-    end
-
-    subgraph INFER["INFERENCE PATH"]
-        direction LR
-        RECENT["New validated sensor data<br/>six-hour window"]
-        ONLINEFEAT["Shared preprocessing and feature engineering<br/>completeness and freshness gate"]
-        SERVE["Deployed approved model<br/>cached bundle"]
-        PROB["Failure-risk probability"]
-        POLICY["Versioned threshold and hysteresis<br/>alert-episode deduplication"]
-        CLASS["Normal or High Risk"]
-        PRED["Immutable prediction<br/>and risk classification"]
-        INSUFFICIENT["Insufficient Data<br/>reason and data-health event"]
-        ALERT["Durable High Risk<br/>alert episode"]
-        DASH["Maintenance dashboard and alert<br/>acknowledge, assign, investigate"]
-
-        RECENT --> ONLINEFEAT
-        ONLINEFEAT -->|valid window| SERVE
-        ONLINEFEAT -.->|invalid or stale| INSUFFICIENT
-        SERVE --> PROB
-        PROB --> POLICY
-        POLICY --> CLASS
-        CLASS --> PRED
-        PRED --> DASH
-        CLASS -->|High Risk transition/update| ALERT
-        ALERT --> DASH
-        INSUFFICIENT --> DASH
-    end
-
-    subgraph FEEDBACK["FEEDBACK AND MLOPS PATH"]
-        direction LR
-        MON["Service, data, model<br/>and outcome monitoring"]
-        SIGNAL["Validated drift, quality or performance signal<br/>with human investigation"]
-        RETRAIN["Monthly or triggered retraining approval<br/>Airflow controlled run"]
-
-        MON --> SIGNAL
-        SIGNAL --> RETRAIN
-    end
-
-    OT -->|MQTT over TLS<br/>scalar envelopes and vibration features| DATA
-    DATA -->|curated sensor history and approved outcomes| TRAIN
-    DATA -->|validated recent data| INFER
-    TRAIN -->|approved model bundle or rollback| INFER
-    INFER -->|predictions, alert state and work-order actions| DATA
-    DATA -.->|data health and matured outcomes| FEEDBACK
-    INFER -.->|latency, errors, outputs and alert behavior| FEEDBACK
-    FEEDBACK -->|approved trigger returns to validation| TRAIN
-
-    classDef ot fill:#fff4cc,stroke:#8a6d00,color:#1f1f1f
-    classDef data fill:#e8f1fb,stroke:#356a9a,color:#1f1f1f
-    classDef train fill:#e8f7ea,stroke:#347a40,color:#1f1f1f
-    classDef infer fill:#f4eafd,stroke:#74449a,color:#1f1f1f
-    classDef feedback fill:#fdeaea,stroke:#9a4545,color:#1f1f1f
-
-    class SENS,EDGE ot
-    class BROKER,INGEST,ONLINEVAL,OPS,LAKE,CMMS data
+    classDef data fill:#edf4fc,stroke:#356a9a,color:#172b3a
+    classDef train fill:#edf7ef,stroke:#347a40,color:#173c20
+    classDef infer fill:#f4eefb,stroke:#74449a,color:#302044
+    classDef feedback fill:#fff0ef,stroke:#9a4545,color:#4b2222
+    class SENS,EDGE,BROKER,INGEST,ONLINEVAL,OPS,LAKE,CMMS data
     class HISTORY,BATCHVAL,FEATTRAIN,TRAINER,EVAL,REGISTRY,DEPLOY train
-    class RECENT,ONLINEFEAT,SERVE,PROB,POLICY,CLASS,PRED,INSUFFICIENT,ALERT,DASH infer
+    class RECENT,ONLINEFEAT,SERVE,PROB,POLICY,CLASS,PRED,DASH,INSUFFICIENT,ALERT infer
     class MON,SIGNAL,RETRAIN feedback
